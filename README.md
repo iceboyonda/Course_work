@@ -107,25 +107,20 @@ GRANT SELECT ON mydb.rims TO 'storage_admin_role';
 ``` 
 ## Транзакция, которая будет добавлять новую продажу и обновлять количество дисков на складе 
 ``` sql 
--- Начинаем транзакцию
+
 START TRANSACTION;
 
--- Вставляем новую продажу
 INSERT INTO `sell` (`date`, `sum`, `kolvo`, `rims_id`, `manager_id`, `client_id`)
 VALUES ('2024-06-18 10:00:00', 1800.00, '2', 1, 3, 18);
 
--- Получаем ID новой продажи
 SET @new_sale_id = LAST_INSERT_ID();
 
--- Обновляем количество дисков на складе
 UPDATE `storage`
 SET `summa` = `summa` - 2
 WHERE `rims_id` = 1 AND `storages` = 'Склад A';
 
--- Фиксируем изменения, если все операции успешно выполнены
 COMMIT;
 
--- В случае ошибки откатываем изменения
 ROLLBACK;
 ``` 
 ## Код для запуска Хранимой процедуры:
