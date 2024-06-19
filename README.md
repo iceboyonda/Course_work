@@ -39,25 +39,20 @@ WHERE
     s.manager_id = 2 AND 
     s.date BETWEEN '2023-11-01 00:00:00' AND '2023-11-15 23:59:59';
 ``` 
-**3-Получить информацию о продаже и ее клиенте**
+**3-Получение общего количества проданных дисков по каждому типу**
 ``` sql 
 SELECT 
-    s.id AS SaleID, 
-    s.date AS SaleDate, 
-    s.sum AS SaleAmount, 
-    s.kolvo AS Quantity,
-    r.firm AS RimFirm, 
-    r.model AS RimModel, 
-    c.name AS ClientName, 
-    c.surname AS ClientSurname
+    rims.firm,
+    rims.model,
+    SUM(sell.kolvo) AS TotalSold
 FROM 
-    sell s
+    sell
 JOIN 
-    rims r ON s.rims_id = r.id
-JOIN 
-    client c ON s.client_id = c.id
-WHERE 
-    s.id = 3;
+    rims ON sell.rims_id = rims.id
+GROUP BY 
+    rims.firm, rims.model
+ORDER BY 
+    TotalSold DESC;
 ``` 
 **4-Получить список всех складов и количество каждого типа дисков на складе**
 ``` sql 
