@@ -118,8 +118,30 @@ COMMIT;
 
 ROLLBACK;
 ``` 
-## Код для запуска Хранимой процедуры:
+## Код для запуска первой Хранимой процедуры:
 ``` sql 
 CALL ProcessSalesByManagerAndDateRange(2, '2023-10-25 00:00:00', '2023-10-29 23:59:59');
 ``` 
 > 2-Айди айди менеджера, '2023-10-25 00:00:00', '2023-10-29 23:59:59' временной промежуток, в котором смотрим продажи
+ ## Код для запуска второй Хранимой процедуры:
+ ``` sql 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddNewClient`(
+    IN p_name VARCHAR(255),
+    IN p_surname VARCHAR(255),
+    IN p_number VARCHAR(13)
+)
+BEGIN
+	DECLARE phone_number VARCHAR(13);
+    
+    SET phone_number = (SELECT number FROM client WHERE  number = p_number);
+    IF phone_number is not NULL THEN 
+      SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Номер телефона уже используется';
+      ELSE 
+        START TRANSACTION;
+        
+        INSERT INTO client (name, surname, number) VALUES (p_name, p_surname, p_number);
+        
+        COMMIT;
+    END IF;
+END
+``` 
