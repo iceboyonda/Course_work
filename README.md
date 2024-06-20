@@ -19,26 +19,21 @@ GROUP BY
 ORDER BY 
     TotalSpent DESC;
 ```
-**2-Найти все продажи, сделанные конкретным менеджером за определенный период**
+**2-Информация о дисках на складе**
 ``` sql 
 SELECT 
-    s.id AS SaleID, 
-    s.date AS SaleDate, 
-    s.sum AS SaleAmount, 
-    s.kolvo AS Quantity,
-    r.firm AS RimFirm, 
-    r.model AS RimModel, 
-    c.name AS ClientName, 
-    c.surname AS ClientSurname
+    rims.id AS RimID,
+    rims.firm AS RimFirm,
+    rims.model AS RimModel,
+    storage.summa AS QuantityInStock,
+    storage.storages AS StorageLocation
 FROM 
-    sell s
+    rims
 JOIN 
-    rims r ON s.rims_id = r.id
-JOIN 
-    client c ON s.client_id = c.id
-WHERE 
-    s.manager_id = 2 AND 
-    s.date BETWEEN '2023-11-01 00:00:00' AND '2023-11-15 23:59:59';
+    storage ON rims.id = storage.rims_id
+ORDER BY 
+    rims.firm, rims.model;
+
 ``` 
 **3-Получение общего количества проданных дисков по каждому типу**
 ``` sql 
@@ -124,7 +119,7 @@ ROLLBACK;
 CALL ProcessSalesByManagerAndDateRange(2, '2023-10-25 00:00:00', '2023-10-29 23:59:59');
 ``` 
 > 2-Айди айди менеджера, '2023-10-25 00:00:00', '2023-10-29 23:59:59' временной промежуток, в котором смотрим продажи
- ## Код для запуска второй Хранимой процедуры:
+ ## вторая Хранимая процедура:
  ``` sql 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `AddNewClient`(
     IN p_name VARCHAR(255),
